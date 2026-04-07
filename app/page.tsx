@@ -1,6 +1,21 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+function Skeleton({ className, style }: { className: string; style?: React.CSSProperties }) {
+  return <div className={`skeleton ${className}`} style={style} />
+}
+
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <main>
       {/* Header */}
@@ -8,11 +23,18 @@ export default function Home() {
         <div className="container">
           <nav>
             <span className="logo">⚡ Fluxion</span>
-            <div className="nav-links">
-              <Link href="#features">Features</Link>
-              <Link href="#install">Install</Link>
-              <Link href="#docs">Docs</Link>
-              <Link href="#comparison">Compare</Link>
+            <button 
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+            <div className={`nav-links ${mobileMenuOpen ? 'open' : ''}`}>
+              <Link href="#features" onClick={() => setMobileMenuOpen(false)}>Features</Link>
+              <Link href="#install" onClick={() => setMobileMenuOpen(false)}>Install</Link>
+              <Link href="#docs" onClick={() => setMobileMenuOpen(false)}>Docs</Link>
+              <Link href="#comparison" onClick={() => setMobileMenuOpen(false)}>Compare</Link>
             </div>
           </nav>
         </div>
@@ -21,58 +43,85 @@ export default function Home() {
       {/* Hero */}
       <section className="hero">
         <div className="container">
-          <span className="badge">🚀 The Future of Data Fetching</span>
-          <h1>One API to control all data</h1>
-          <p>
-            Fluxion is a full data orchestration engine that replaces Axios, React Query, SWR, 
-            and basic API SDKs with a single, unified API.
-          </p>
-          <div className="install-box">
-            <code>npm install fluxion-js</code>
-          </div>
+          {loading ? (
+            <>
+              <Skeleton className="skeleton-text" style={{ width: 200, height: 32, margin: '0 auto 20px' }} />
+              <Skeleton className="skeleton-text-xl" style={{ margin: '0 auto 20px' }} />
+              <Skeleton className="skeleton-text-lg" style={{ margin: '0 auto 30px' }} />
+              <Skeleton className="skeleton-text" style={{ width: 250, height: 50 }} />
+            </>
+          ) : (
+            <>
+              <span className="badge">🚀 The Future of Data Fetching</span>
+              <h1>One API to control all data</h1>
+              <p>
+                Fluxion is a full data orchestration engine that replaces Axios, React Query, SWR, 
+                and basic API SDKs with a single, unified API.
+              </p>
+              <div className="install-box">
+                <code>npm install fluxion-js</code>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
       {/* Features */}
       <section id="features">
         <div className="container">
-          <h2 className="section-title">Why Fluxion?</h2>
-          <div className="features-grid">
-            <div className="feature-card">
-              <h3>⚡ Zero Config</h3>
-              <p>Works out of the box. No setup required. Just import and use.</p>
+          <h2 className="section-title">
+            {loading ? <Skeleton className="skeleton-text" style={{ width: 200, margin: '0 auto 40px' }} /> : 'Why Fluxion?'}
+          </h2>
+          {loading ? (
+            <div className="features-grid">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Skeleton key={i} className="skeleton-card" />
+              ))}
             </div>
-            <div className="feature-card">
-              <h3>🔄 Smart Caching</h3>
-              <p>Automatic request deduplication, caching, and intelligent cache invalidation.</p>
+          ) : (
+            <div className="features-grid">
+              <div className="feature-card">
+                <h3>⚡ Zero Config</h3>
+                <p>Works out of the box. No setup required. Just import and use.</p>
+              </div>
+              <div className="feature-card">
+                <h3>🔄 Smart Caching</h3>
+                <p>Automatic request deduplication, caching, and intelligent cache invalidation.</p>
+              </div>
+              <div className="feature-card">
+                <h3>🔌 Plugin System</h3>
+                <p>Extensible architecture with built-in plugins for auth, logging, and rate limiting.</p>
+              </div>
+              <div className="feature-card">
+                <h3>🌐 Works Everywhere</h3>
+                <p>Browser, Node.js, Edge. One API for all platforms.</p>
+              </div>
+              <div className="feature-card">
+                <h3>📊 Built-in Metrics</h3>
+                <p>Track request duration, retries, cache hits, and more.</p>
+              </div>
+              <div className="feature-card">
+                <h3>🔄 Offline Mode</h3>
+                <p>Queue requests and replay when back online.</p>
+              </div>
             </div>
-            <div className="feature-card">
-              <h3>🔌 Plugin System</h3>
-              <p>Extensible architecture with built-in plugins for auth, logging, and rate limiting.</p>
-            </div>
-            <div className="feature-card">
-              <h3>🌐 Works Everywhere</h3>
-              <p>Browser, Node.js, Edge. One API for all platforms.</p>
-            </div>
-            <div className="feature-card">
-              <h3>📊 Built-in Metrics</h3>
-              <p>Track request duration, retries, cache hits, and more.</p>
-            </div>
-            <div className="feature-card">
-              <h3>🔄 Offline Mode</h3>
-              <p>Queue requests and replay when back online.</p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
       {/* Installation */}
       <section id="install" style={{ background: 'white' }}>
         <div className="container">
-          <h2 className="section-title">Installation</h2>
-          <div className="code-block">
-            <code># npm<br/>npm install fluxion-js<br/><br/># yarn<br/>yarn add fluxion-js<br/><br/># pnpm<br/>pnpm add fluxion-js</code>
-          </div>
+          <h2 className="section-title">
+            {loading ? <Skeleton className="skeleton-text" style={{ width: 200, margin: '0 auto 40px' }} /> : 'Installation'}
+          </h2>
+          {loading ? (
+            <Skeleton className="skeleton-code" />
+          ) : (
+            <div className="code-block">
+              <code># npm<br/>npm install fluxion-js<br/><br/># yarn<br/>yarn add fluxion-js<br/><br/># pnpm<br/>pnpm add fluxion-js</code>
+            </div>
+          )}
         </div>
       </section>
 
@@ -286,8 +335,17 @@ fluxion.clearMetrics();`}</code>
       {/* Comparison */}
       <section id="comparison">
         <div className="container">
-          <h2 className="section-title">How We Compare</h2>
-          <div className="comparison-table">
+          <h2 className="section-title">
+            {loading ? <Skeleton className="skeleton-text" style={{ width: 250, margin: '0 auto 40px' }} /> : 'How We Compare'}
+          </h2>
+          {loading ? (
+            <div className="comparison-table">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="skeleton-card" style={{ height: 250 }} />
+              ))}
+            </div>
+          ) : (
+            <div className="comparison-table">
             <div className="compare-card">
               <h3>Axios</h3>
               <div className="price">Basic</div>
@@ -320,6 +378,7 @@ fluxion.clearMetrics();`}</code>
               </ul>
             </div>
           </div>
+          )}
         </div>
       </section>
 
